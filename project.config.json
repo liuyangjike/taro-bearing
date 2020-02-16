@@ -2,7 +2,7 @@
   "miniprogramRoot": "./dist",
   "projectname": "taro-word",
   "description": "负负得正",
-  "appid": "",
+  "appid": "wx68d3724b2b8b937a",
   "setting": {
     "urlCheck": true,
     "es6": false,
