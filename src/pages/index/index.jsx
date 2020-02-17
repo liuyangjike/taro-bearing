@@ -84,7 +84,7 @@ export default class Index extends Component {
 
   drawBearing = () => {
 
-    function drawLineWithArrow(ctx, x1, y1, x2, y2, direction) {
+    function drawLineWithArrow(ctx, x1, y1, x2, y2, direction, text) {
       // direction  1: 右;2:左;3:上;4:下
       const GAP = 30
       const reserve = 4
@@ -102,41 +102,85 @@ export default class Index extends Component {
           y5 = y2
           x6 = x5 - reserve
           y6 = y5
-          break;
+          break
+        case 2:
+          x3 = x1 - GAP * direction
+          y3 = y1
+          x4 = x3 + reserve
+          y4 = y3
+          x5 = x2 - GAP * direction
+          y5 = y2
+          x6 = x5 + reserve
+          y6 = y5
+          break
+        case 3:
+          x3 = x1
+          y3 = y1 - GAP
+          x4 = x3
+          y4 = y3 + reserve
+          x5 = x2 
+          y5 = y2 - GAP
+          x6 = x5 
+          y6 = y5 + reserve
+          break
         default:
           break;
+        
       }
+
       ctx.beginPath()
+      ctx.textAlign = 'center'
+      ctx.textBaseline = "middle"
+      ctx.font = "14px Microsoft YaHei"
+      ctx.fillStyle = "#555"
 
       ctx.moveTo(x1, y1)
       ctx.lineTo(x3, y3)
-
       ctx.moveTo(x4, y4)
 
-      ctx.lineTo(x4 - arrowRadius * Math.sin(angle), y4 + arrowRadius * Math.cos(angle))
-      ctx.lineTo(x4 + arrowRadius * Math.sin(angle), y4 + arrowRadius * Math.cos(angle))
-      ctx.lineTo(x4, y4)
-      context.fillStyle = "#555"
-      ctx.stroke()
-      ctx.fill()
+      if (direction > 2) {
+        ctx.lineTo(x4 + arrowRadius * Math.cos(angle), y4 + arrowRadius * Math.sin(angle))
+        ctx.lineTo(x4 + arrowRadius * Math.cos(angle), y4 - arrowRadius * Math.sin(angle))
+      } else {
+        ctx.lineTo(x4 - arrowRadius * Math.sin(angle), y4 + arrowRadius * Math.cos(angle))
+        ctx.lineTo(x4 + arrowRadius * Math.sin(angle), y4 + arrowRadius * Math.cos(angle))
+      }
 
-      ctx.beginPath()
+      ctx.lineTo(x4, y4)
       ctx.moveTo(x2, y2)
       ctx.lineTo(x5, y5)
-
       ctx.moveTo(x6, y6)
 
-      ctx.lineTo(x6 - arrowRadius * Math.sin(angle), y6 - arrowRadius * Math.cos(angle))
-      ctx.lineTo(x6 + arrowRadius * Math.sin(angle), y6 - arrowRadius * Math.cos(angle))
+
+      if (direction > 2) {
+        ctx.lineTo(x6 - arrowRadius * Math.cos(angle), y6 + arrowRadius * Math.sin(angle))
+        ctx.lineTo(x6 - arrowRadius * Math.cos(angle), y6 - arrowRadius * Math.sin(angle))
+      } else {
+        ctx.lineTo(x6 - arrowRadius * Math.sin(angle), y6 - arrowRadius * Math.cos(angle))
+        ctx.lineTo(x6 + arrowRadius * Math.sin(angle), y6 - arrowRadius * Math.cos(angle))
+      }
+
       ctx.lineTo(x6, y6)
+      
+      if (direction > 2) {
+        ctx.fillText(text, ( x4 + x6) / 2, y4)
+        ctx.lineTo(( x4 + x6) / 2  + 3 * reserve, y4)
+        ctx.moveTo(x4, y4)
+        ctx.lineTo(( x4 + x6) / 2  - 3 * reserve, y4)
+      } else {
+        ctx.fillText(text, x4, (y4 + y6)/2)
+        ctx.lineTo(x4, (y4 + y6)/2 + 2 * reserve)
+        ctx.moveTo(x4, y4)
+        ctx.lineTo(x4, (y4 + y6)/2 - 2 * reserve)
+      }
 
-      ctx.lineTo(x4, y4)
-
+      ctx.stroke()
       ctx.fill()
+      ctx.closePath()
       
     }
 
-  function drawRoundedRect2(ctx, x, y, width, height, d, r, ball, fill, stroke) {
+  function drawRoundedRect(ctx, x, y, width, height, d, r, ball) {
     const bearing = [
       {
         x: x,  //0
@@ -312,19 +356,13 @@ export default class Index extends Component {
     ctx.arc(bearing[18].x, bearing[18].y, ball,  - Math.PI / 4, Math.PI  / 4, false)
     ctx.stroke()
 
-
-    // 尺寸
-
-    ctx.stroke()
-    ctx.closePath()
-
-    drawLineWithArrow(ctx, bearing[12].x, bearing[12].y, bearing[15].x, bearing[15].y, 1)
+    drawLineWithArrow(ctx, bearing[12].x, bearing[12].y, bearing[15].x, bearing[15].y, 1, `d ${d/10}`)
+    drawLineWithArrow(ctx, bearing[1].x, bearing[1].y, bearing[25].x, bearing[25].y, 2, `D ${height/10}`)
+    drawLineWithArrow(ctx, bearing[1].x, bearing[1].y, bearing[3].x, bearing[3].y, 3, `B ${width/10}`)
 
     ctx.stroke()
     ctx.draw()
   }
-
-
 
     // 使用 wx.createContext 获取绘图上下文 context
     var context = Taro.createCanvasContext('bearing')
@@ -333,13 +371,8 @@ export default class Index extends Component {
     context.setStrokeStyle("#111")
 
     context.fillStyle = "#66bbdd"
-    // context.rect(0, 0, 70, 220)
-    drawRoundedRect2(context, 100, 200, 70, 220, 80, 5, 20, false, true)
-    // context.stroke()
-    // context.draw()
-    // context.fill()
+    drawRoundedRect(context, 100, 100, 70, 210, 70, 5, 20)
 
- 
   }
 
   fetchData = () => {
