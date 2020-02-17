@@ -84,6 +84,58 @@ export default class Index extends Component {
 
   drawBearing = () => {
 
+    function drawLineWithArrow(ctx, x1, y1, x2, y2, direction) {
+      // direction  1: 右;2:左;3:上;4:下
+      const GAP = 30
+      const reserve = 4
+      const arrowRadius = 8
+      const angle = Math.PI / 12
+      let x3, y3, x4, y4, x5, y5, x6, y6
+
+      switch (direction) {
+        case 1:
+          x3 = x1 + GAP * direction
+          y3 = y1
+          x4 = x3 - reserve
+          y4 = y3
+          x5 = x2 + GAP * direction
+          y5 = y2
+          x6 = x5 - reserve
+          y6 = y5
+          break;
+        default:
+          break;
+      }
+      ctx.beginPath()
+
+      ctx.moveTo(x1, y1)
+      ctx.lineTo(x3, y3)
+
+      ctx.moveTo(x4, y4)
+
+      ctx.lineTo(x4 - arrowRadius * Math.sin(angle), y4 + arrowRadius * Math.cos(angle))
+      ctx.lineTo(x4 + arrowRadius * Math.sin(angle), y4 + arrowRadius * Math.cos(angle))
+      ctx.lineTo(x4, y4)
+      context.fillStyle = "#555"
+      ctx.stroke()
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.moveTo(x2, y2)
+      ctx.lineTo(x5, y5)
+
+      ctx.moveTo(x6, y6)
+
+      ctx.lineTo(x6 - arrowRadius * Math.sin(angle), y6 - arrowRadius * Math.cos(angle))
+      ctx.lineTo(x6 + arrowRadius * Math.sin(angle), y6 - arrowRadius * Math.cos(angle))
+      ctx.lineTo(x6, y6)
+
+      ctx.lineTo(x4, y4)
+
+      ctx.fill()
+      
+    }
+
   function drawRoundedRect2(ctx, x, y, width, height, d, r, ball, fill, stroke) {
     const bearing = [
       {
@@ -193,7 +245,7 @@ export default class Index extends Component {
       {
         x: x,     //26
         y: y + height - r  //26
-      },
+      }
     ]
 
     // outer 上
@@ -258,7 +310,15 @@ export default class Index extends Component {
     ctx.arc(bearing[18].x, bearing[18].y, ball, Math.PI * 3 / 4, - Math.PI * 3 / 4, false)
     ctx.moveTo(bearing[17].x, bearing[17].y)
     ctx.arc(bearing[18].x, bearing[18].y, ball,  - Math.PI / 4, Math.PI  / 4, false)
+    ctx.stroke()
 
+
+    // 尺寸
+
+    ctx.stroke()
+    ctx.closePath()
+
+    drawLineWithArrow(ctx, bearing[12].x, bearing[12].y, bearing[15].x, bearing[15].y, 1)
 
     ctx.stroke()
     ctx.draw()
